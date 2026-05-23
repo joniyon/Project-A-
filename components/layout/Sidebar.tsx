@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   LayoutDashboard,
-  Megaphone,
   BarChart2,
   Zap,
   Database,
@@ -15,6 +14,7 @@ import {
   Layers,
   ArrowLeftToLine,
   ArrowRightToLine,
+  type LucideIcon,
 } from "lucide-react";
 import {
   Tooltip,
@@ -25,7 +25,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-
+import Megaphone from "@/assets/megaphone.svg";
 /* ------------------------------------------------------------------ */
 /* Nav config — Dashboard first, no badges                             */
 /* ------------------------------------------------------------------ */
@@ -77,28 +77,35 @@ function NavItem({
         : "text-muted-foreground hover:bg-muted/60 hover:text-foreground cursor-default opacity-50"
   );
 
-  const inner = (
+  const InnerComp = () => (
     <div className={rowClass}>
-      <Icon
-        size={20}
-        strokeWidth={1.5}
-        className={cn(
-          "shrink-0 transition-colors",
-          isActive
-            ? "text-foreground"
-            : "text-muted-foreground group-hover:text-foreground"
-        )}
-      />
-      {open && (
+      {
+       href?.includes("/campaigns") ? <Icon />  : 
+       <Icon
+          size={20}
+          strokeWidth={1.5}
+          className={cn(
+            "shrink-0 transition-colors",
+            isActive
+              ? "text-foreground"
+              : "text-muted-foreground group-hover:text-foreground"
+          )}
+      /> 
+      }
+      {open ? (
         <span className="whitespace-nowrap leading-none">{label}</span>
-      )}
+      ) : null}
     </div>
   );
 
   const wrapped = clickable && href ? (
-    <Link href={href} className="block w-full">{inner}</Link>
+    <Link href={href} className="block w-full">
+      <InnerComp />
+    </Link>
   ) : (
-    <div className="w-full">{inner}</div>
+    <div className="w-full">
+      <InnerComp />
+    </div>
   );
 
   if (!open) {
@@ -131,7 +138,7 @@ export default function Sidebar() {
         )}
       >
         {/* ── Logo / toggle row ── */}
-        <div className="flex items-center h-[60px] shrink-0 border-b border-border px-3">
+        <div className="flex items-center h-[64px] shrink-0 border-b border-border px-3">
           {open ? (
             <>
               <span
