@@ -22,24 +22,23 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 /* ------------------------------------------------------------------ */
-/* Nav config                                                           */
+/* Nav config — Dashboard first, no badges                             */
 /* ------------------------------------------------------------------ */
 
 const mainNav = [
-  { href: "/campaigns", label: "Campaigns", icon: Megaphone,       badge: "42", clickable: true  },
-  { href: null,         label: "Dashboard", icon: LayoutDashboard, badge: null,  clickable: false },
-  { href: null,         label: "Boosts",    icon: Zap,             badge: "3",   clickable: false },
-  { href: null,         label: "Database",  icon: Database,        badge: null,  clickable: false },
+  { href: null,         label: "Dashboard", icon: LayoutDashboard, clickable: false },
+  { href: "/campaigns", label: "Campaigns", icon: Megaphone,       clickable: true  },
+  { href: null,         label: "Boosts",    icon: Zap,             clickable: false },
+  { href: null,         label: "Database",  icon: Database,        clickable: false },
 ];
 
 const secondaryNav = [
-  { href: null, label: "Team",          icon: Users,  badge: null, clickable: false },
-  { href: null, label: "Subscriptions", icon: Layers, badge: null, clickable: false },
+  { href: null, label: "Team",          icon: Users,  clickable: false },
+  { href: null, label: "Subscriptions", icon: Layers, clickable: false },
 ];
 
 const bottomNav = [
@@ -48,14 +47,13 @@ const bottomNav = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* NavItem — shared row renderer                                        */
+/* NavItem                                                              */
 /* ------------------------------------------------------------------ */
 
 function NavItem({
   href,
   label,
   icon: Icon,
-  badge,
   clickable,
   isActive,
   open,
@@ -63,47 +61,34 @@ function NavItem({
   href: string | null;
   label: string;
   icon: React.ElementType;
-  badge: string | null;
   clickable: boolean;
   isActive: boolean;
   open: boolean;
 }) {
   const rowClass = cn(
-    "group flex items-center gap-3 w-full px-2 py-2 rounded-md text-sm transition-colors duration-150 select-none",
-    open ? "justify-between" : "justify-center",
+    "group flex items-center w-full px-2 py-2 rounded-md text-sm transition-colors duration-150 select-none",
+    open ? "gap-3" : "justify-center",
     isActive
-      ? "bg-muted text-foreground font-semibold"
+      ? "bg-muted text-foreground font-medium"
       : clickable
         ? "text-muted-foreground hover:bg-muted/60 hover:text-foreground cursor-pointer"
-        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground cursor-default opacity-60"
+        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground cursor-default opacity-50"
   );
 
   const inner = (
     <div className={rowClass}>
-      <div className={cn("flex items-center gap-3", !open && "justify-center")}>
-        <Icon
-          size={20}
-          strokeWidth={1.5}
-          className={cn(
-            "shrink-0 transition-colors",
-            isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
-          )}
-        />
-        {open && <span className="whitespace-nowrap leading-none">{label}</span>}
-      </div>
-
-      {open && badge && (
-        <Badge
-          variant="secondary"
-          className={cn(
-            "text-[10px] font-semibold h-5 min-w-[20px] px-1.5 rounded",
-            isActive
-              ? "bg-foreground/10 text-foreground"
-              : "bg-muted text-muted-foreground"
-          )}
-        >
-          {badge}
-        </Badge>
+      <Icon
+        size={20}
+        strokeWidth={1.5}
+        className={cn(
+          "shrink-0 transition-colors",
+          isActive
+            ? "text-foreground"
+            : "text-muted-foreground group-hover:text-foreground"
+        )}
+      />
+      {open && (
+        <span className="whitespace-nowrap leading-none">{label}</span>
       )}
     </div>
   );
@@ -118,10 +103,7 @@ function NavItem({
     return (
       <Tooltip>
         <TooltipTrigger asChild>{wrapped}</TooltipTrigger>
-        <TooltipContent side="right">
-          {label}
-          {badge && <span className="ml-1 text-muted-foreground">({badge})</span>}
-        </TooltipContent>
+        <TooltipContent side="right">{label}</TooltipContent>
       </Tooltip>
     );
   }
@@ -135,7 +117,7 @@ function NavItem({
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [open, setOpen]   = useState(true);
+  const [open, setOpen] = useState(true);
 
   return (
     <TooltipProvider delayDuration={150}>
@@ -149,7 +131,6 @@ export default function Sidebar() {
         {/* ── Logo / toggle row ── */}
         <div className="flex items-center h-[60px] shrink-0 border-b border-border px-3">
           {open ? (
-            /* Expanded: logo + toggle on right */
             <>
               <span
                 className="flex-1 text-[17px] text-foreground tracking-tight whitespace-nowrap"
@@ -165,7 +146,6 @@ export default function Sidebar() {
               </button>
             </>
           ) : (
-            /* Collapsed: toggle sits exactly where the logo was */
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -231,7 +211,9 @@ export default function Sidebar() {
 
             return !open ? (
               <Tooltip key={label}>
-                <TooltipTrigger asChild><div className="w-full">{row}</div></TooltipTrigger>
+                <TooltipTrigger asChild>
+                  <div className="w-full">{row}</div>
+                </TooltipTrigger>
                 <TooltipContent side="right">{label}</TooltipContent>
               </Tooltip>
             ) : (
@@ -253,7 +235,7 @@ export default function Sidebar() {
             <TooltipTrigger asChild>
               <Avatar className="w-8 h-8 shrink-0 cursor-pointer">
                 <AvatarImage src="" />
-                <AvatarFallback className="text-xs font-semibold bg-muted text-foreground">
+                <AvatarFallback className="text-xs font-medium bg-muted text-foreground">
                   JA
                 </AvatarFallback>
               </Avatar>
@@ -267,7 +249,7 @@ export default function Sidebar() {
 
           {open && (
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-foreground truncate">joniyon</p>
+              <p className="text-xs font-medium text-foreground truncate">joniyon</p>
               <p className="text-[11px] text-muted-foreground truncate">
                 arowokajohn1@gmail.com
               </p>
