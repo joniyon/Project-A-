@@ -9,9 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans:    ["IBM Plex Sans", "system-ui", "sans-serif"],
-        mono:    ["IBM Plex Mono", "monospace"],
-        display: ["Instrument Serif", "Georgia", "serif"],
+        sans:    ["var(--font-geist-sans)", "system-ui", "sans-serif"],
+        mono:    ["var(--font-geist-mono)", "monospace"],
+        display: ["var(--font-display)", "Georgia", "serif"],
       },
       colors: {
         border:      "hsl(var(--border))",
