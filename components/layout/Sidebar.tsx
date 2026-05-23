@@ -32,7 +32,6 @@ import { cn } from "@/lib/utils";
 const mainNav = [
   { href: null,         label: "Dashboard", icon: LayoutDashboard, clickable: false },
   { href: "/campaigns", label: "Campaigns", icon: Megaphone,       clickable: true  },
-  { href: null,         label: "Analytics", icon: Chart,           clickable: false },
   { href: null,         label: "Boosts",    icon: Zap,             clickable: false },
   { href: null,         label: "Database",  icon: Database,        clickable: false },
 ];
