@@ -18,6 +18,15 @@ const TABS: { key: TabKey; label: string; filter?: CampaignStatus }[] = [
   { key: "completed",   label: "Completed",     filter: "Completed"   },
 ];
 
+const DATE_OPTIONS = [
+  "This week",
+  "Last week",
+  "This month",
+  "Last month",
+  "Last 3 months",
+  "All time",
+];
+
 function getCounts(data: Campaign[]) {
   return {
     all:           data.length,
@@ -30,9 +39,10 @@ function getCounts(data: Campaign[]) {
 /* ------------------------------------------------------------------ */
 
 export default function CampaignTable() {
-  const [activeTab, setActiveTab]     = useState<TabKey>("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(8);
+  const [activeTab, setActiveTab]       = useState<TabKey>("all");
+  const [currentPage, setCurrentPage]   = useState(1);
+  const [rowsPerPage, setRowsPerPage]   = useState(8);
+  const [dateFilter, setDateFilter]     = useState("This week");
 
   const counts = getCounts(campaigns);
 
@@ -64,7 +74,7 @@ export default function CampaignTable() {
               key={tab.key}
               onClick={() => handleTabChange(tab.key)}
               className={cn(
-                "relative px-4 py-3.5 text-sm transition-colors whitespace-nowrap select-none",
+                "relative px-4 py-4 text-sm transition-colors whitespace-nowrap select-none",
                 activeTab === tab.key
                   ? "text-foreground font-medium"
                   : "text-muted-foreground font-normal hover:text-foreground"
@@ -86,12 +96,23 @@ export default function CampaignTable() {
           ))}
         </div>
 
-        {/* Date filter */}
-        <div className="pr-4">
-          <button className="flex items-center gap-1.5 text-xs text-foreground border border-input rounded-md px-3 py-1.5 hover:bg-muted transition-colors font-normal">
-            This week
-            <ChevronDown size={13} strokeWidth={1.5} />
-          </button>
+        {/* Date filter — functional select */}
+        <div className="pr-4 relative">
+          <select
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="appearance-none text-xs text-foreground font-normal border border-input rounded-md pl-3 pr-8 py-2 bg-background hover:bg-muted transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring/20"
+            style={{ fontFamily: "var(--font-sans)" }}
+          >
+            {DATE_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+          <ChevronDown
+            size={12}
+            strokeWidth={1.5}
+            className="absolute right-6 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+          />
         </div>
       </div>
 
@@ -99,22 +120,22 @@ export default function CampaignTable() {
       <div className="overflow-x-auto">
         <table className="w-full">
 
-          {/* Header — no background tint, plain white */}
+          {/* Header — plain white, no tint */}
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left pl-5 pr-3 py-3.5 text-xs font-medium text-muted-foreground w-12">
+              <th className="text-left pl-4 pr-4 py-3 text-xs font-medium text-muted-foreground w-12">
                 #
               </th>
-              <th className="text-left px-4 py-3.5 text-xs font-medium text-muted-foreground">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">
                 Title
               </th>
-              <th className="text-left px-4 py-3.5 text-xs font-medium text-muted-foreground">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">
                 Labels
               </th>
-              <th className="text-right px-4 py-3.5 text-xs font-medium text-muted-foreground w-32">
+              <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground w-32">
                 Reward [$]
               </th>
-              <th className="text-left px-4 py-3.5 text-xs font-medium text-muted-foreground w-36">
+              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-36">
                 Status
               </th>
               <th className="w-12" />
@@ -122,33 +143,25 @@ export default function CampaignTable() {
           </thead>
 
           {/* Body */}
-          <tbody>
+          <tbody className="divide-y divide-slate-200">
             {paginated.map((campaign, index) => {
               const rowNumber = (currentPage - 1) * rowsPerPage + index + 1;
-              const isLast    = index === paginated.length - 1;
               return (
-                <tr
-                  key={campaign.id}
-                  className={cn(
-                    "campaign-row group",
-                    !isLast && "border-b border-border"
-                  )}
-                >
+                <tr key={campaign.id} className="campaign-row">
                   {/* # */}
-                  <td className="pl-5 pr-3 py-4 text-xs text-muted-foreground tabular-nums">
+                  <td className="pl-4 pr-4 py-4 text-xs text-muted-foreground tabular-nums">
                     {rowNumber}
                   </td>
 
-                  {/* Title */}
+                  {/* Title + gradient thumbnail */}
                   <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       <div
                         className={cn(
-                          "w-9 h-9 rounded-md shrink-0 bg-gradient-to-br",
+                          "w-8 h-8 rounded-md shrink-0 bg-gradient-to-br",
                           campaign.gradient
                         )}
                       />
-                      {/* font-normal to match screenshot */}
                       <span className="text-sm font-normal text-foreground line-clamp-1 leading-snug">
                         {campaign.title}
                       </span>
@@ -157,14 +170,14 @@ export default function CampaignTable() {
 
                   {/* Labels */}
                   <td className="px-4 py-4">
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-2">
                       {campaign.labels.map((label) => (
                         <LabelTag key={label} label={label} />
                       ))}
                     </div>
                   </td>
 
-                  {/* Reward — regular weight, not semibold */}
+                  {/* Reward */}
                   <td className="px-4 py-4 text-right text-sm font-normal text-foreground tabular-nums">
                     ${campaign.reward}
                   </td>
@@ -174,9 +187,9 @@ export default function CampaignTable() {
                     <StatusBadge status={campaign.status} />
                   </td>
 
-                  {/* Actions — always visible, not hidden */}
-                  <td className="px-3 py-4">
-                    <button className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+                  {/* Actions — always visible */}
+                  <td className="px-4 py-4">
+                    <button className="w-8 h-8 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
                       <MoreHorizontal size={16} strokeWidth={1.5} />
                     </button>
                   </td>
