@@ -6,13 +6,14 @@ import { useState } from "react";
 import {
   LayoutDashboard,
   Megaphone,
-  BarChart2,
   Zap,
   Database,
   HelpCircle,
   Settings,
-  PanelLeftClose,
-  PanelLeftOpen,
+  Users,
+  Layers,
+  ArrowLeftToLine,
+  ArrowRightToLine,
 } from "lucide-react";
 import {
   Tooltip,
@@ -29,26 +30,112 @@ import { cn } from "@/lib/utils";
 /* Nav config                                                           */
 /* ------------------------------------------------------------------ */
 
-const navItems = [
-  { href: "/campaigns", label: "Campaigns", icon: Megaphone,       badge: "42", active: true  },
-  { href: null,         label: "Dashboard", icon: LayoutDashboard, badge: null,  active: false },
-  { href: null,         label: "Analytics", icon: BarChart2,       badge: null,  active: false },
-  { href: null,         label: "Boosts",    icon: Zap,             badge: "3",   active: false },
-  { href: null,         label: "Database",  icon: Database,        badge: null,  active: false },
+const mainNav = [
+  { href: "/campaigns", label: "Campaigns", icon: Megaphone,       badge: "42", clickable: true  },
+  { href: null,         label: "Dashboard", icon: LayoutDashboard, badge: null,  clickable: false },
+  { href: null,         label: "Boosts",    icon: Zap,             badge: "3",   clickable: false },
+  { href: null,         label: "Database",  icon: Database,        badge: null,  clickable: false },
 ];
 
-const bottomItems = [
-  { href: null, label: "Get Help", icon: HelpCircle },
-  { href: null, label: "Settings", icon: Settings },
+const secondaryNav = [
+  { href: null, label: "Team",          icon: Users,  badge: null, clickable: false },
+  { href: null, label: "Subscriptions", icon: Layers, badge: null, clickable: false },
+];
+
+const bottomNav = [
+  { label: "Get Help", icon: HelpCircle },
+  { label: "Settings", icon: Settings   },
 ];
 
 /* ------------------------------------------------------------------ */
-/* Component                                                            */
+/* NavItem — shared row renderer                                        */
+/* ------------------------------------------------------------------ */
+
+function NavItem({
+  href,
+  label,
+  icon: Icon,
+  badge,
+  clickable,
+  isActive,
+  open,
+}: {
+  href: string | null;
+  label: string;
+  icon: React.ElementType;
+  badge: string | null;
+  clickable: boolean;
+  isActive: boolean;
+  open: boolean;
+}) {
+  const rowClass = cn(
+    "group flex items-center gap-3 w-full px-2 py-2 rounded-md text-sm transition-colors duration-150 select-none",
+    open ? "justify-between" : "justify-center",
+    isActive
+      ? "bg-muted text-foreground font-semibold"
+      : clickable
+        ? "text-muted-foreground hover:bg-muted/60 hover:text-foreground cursor-pointer"
+        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground cursor-default opacity-60"
+  );
+
+  const inner = (
+    <div className={rowClass}>
+      <div className={cn("flex items-center gap-3", !open && "justify-center")}>
+        <Icon
+          size={20}
+          strokeWidth={1.5}
+          className={cn(
+            "shrink-0 transition-colors",
+            isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
+          )}
+        />
+        {open && <span className="whitespace-nowrap leading-none">{label}</span>}
+      </div>
+
+      {open && badge && (
+        <Badge
+          variant="secondary"
+          className={cn(
+            "text-[10px] font-semibold h-5 min-w-[20px] px-1.5 rounded",
+            isActive
+              ? "bg-foreground/10 text-foreground"
+              : "bg-muted text-muted-foreground"
+          )}
+        >
+          {badge}
+        </Badge>
+      )}
+    </div>
+  );
+
+  const wrapped = clickable && href ? (
+    <Link href={href} className="block w-full">{inner}</Link>
+  ) : (
+    <div className="w-full">{inner}</div>
+  );
+
+  if (!open) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{wrapped}</TooltipTrigger>
+        <TooltipContent side="right">
+          {label}
+          {badge && <span className="ml-1 text-muted-foreground">({badge})</span>}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return wrapped;
+}
+
+/* ------------------------------------------------------------------ */
+/* Sidebar                                                              */
 /* ------------------------------------------------------------------ */
 
 export default function Sidebar() {
-  const pathname   = usePathname();
-  const [open, setOpen] = useState(true); // true = expanded
+  const pathname = usePathname();
+  const [open, setOpen]   = useState(true);
 
   return (
     <TooltipProvider delayDuration={150}>
@@ -56,143 +143,100 @@ export default function Sidebar() {
         className={cn(
           "relative flex flex-col h-full bg-background border-r border-border",
           "transition-[width] duration-300 ease-in-out overflow-hidden",
-          open ? "w-[220px]" : "w-[56px]"
+          open ? "w-[224px]" : "w-[56px]"
         )}
       >
-        {/* ── Logo row ── */}
-        <div className="flex items-center h-[60px] shrink-0 border-b border-border px-3 gap-2">
-          {/* Collapse toggle */}
-          <button
-            onClick={() => setOpen(!open)}
-            className="w-8 h-8 shrink-0 flex items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-          >
-            {open
-              ? <PanelLeftClose size={20} strokeWidth={1.75} />
-              : <PanelLeftOpen  size={20} strokeWidth={1.75} />}
-          </button>
-
-          {/* Brand name — fades out when collapsed */}
-          <span
-            className={cn(
-              "text-[17px] text-foreground tracking-tight whitespace-nowrap transition-opacity duration-200",
-              open ? "opacity-100" : "opacity-0 pointer-events-none"
-            )}
-            style={{ fontFamily: "var(--font-display)", fontStyle: "italic" }}
-          >
-            Cube Campaign
-          </span>
+        {/* ── Logo / toggle row ── */}
+        <div className="flex items-center h-[60px] shrink-0 border-b border-border px-3">
+          {open ? (
+            /* Expanded: logo + toggle on right */
+            <>
+              <span
+                className="flex-1 text-[17px] text-foreground tracking-tight whitespace-nowrap"
+                style={{ fontFamily: "var(--font-display)", fontStyle: "italic" }}
+              >
+                Cube Campaign
+              </span>
+              <button
+                onClick={() => setOpen(false)}
+                className="w-8 h-8 shrink-0 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <ArrowLeftToLine size={20} strokeWidth={1.5} />
+              </button>
+            </>
+          ) : (
+            /* Collapsed: toggle sits exactly where the logo was */
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setOpen(true)}
+                  className="w-8 h-8 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <ArrowRightToLine size={20} strokeWidth={1.5} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">Expand sidebar</TooltipContent>
+            </Tooltip>
+          )}
         </div>
 
         {/* ── Main nav ── */}
-        <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-hidden">
-          {navItems.map(({ href, label, icon: Icon, badge }) => {
-            const isActive = href ? pathname.startsWith(href) : false;
-            const isClickable = !!href;
-
-            const inner = (
-              <div
-                className={cn(
-                  "group flex items-center gap-3 px-2 py-2 rounded-md text-sm w-full",
-                  "transition-colors duration-150",
-                  open ? "justify-between" : "justify-center",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : isClickable
-                      ? "text-muted-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground cursor-default opacity-70"
-                )}
-              >
-                {/* Icon + label */}
-                <div className={cn("flex items-center gap-3", !open && "justify-center")}>
-                  <Icon
-                    size={20}
-                    strokeWidth={isActive ? 2 : 1.75}
-                    className="shrink-0"
-                  />
-                  {open && (
-                    <span className="font-medium whitespace-nowrap leading-none">
-                      {label}
-                    </span>
-                  )}
-                </div>
-
-                {/* Badge */}
-                {open && badge && (
-                  <Badge
-                    variant="secondary"
-                    className={cn(
-                      "text-[10px] font-semibold h-5 min-w-5 px-1.5 rounded",
-                      isActive
-                        ? "bg-primary-foreground/20 text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    )}
-                  >
-                    {badge}
-                  </Badge>
-                )}
-              </div>
-            );
-
-            const wrapped = isClickable ? (
-              <Link key={label} href={href!} className="block w-full">
-                {inner}
-              </Link>
-            ) : (
-              <div key={label} className="w-full">
-                {inner}
-              </div>
-            );
-
-            /* Tooltip when collapsed */
-            if (!open) {
-              return (
-                <Tooltip key={label}>
-                  <TooltipTrigger asChild>{wrapped}</TooltipTrigger>
-                  <TooltipContent side="right">
-                    <span>{label}</span>
-                    {badge && (
-                      <span className="ml-1.5 text-muted-foreground">({badge})</span>
-                    )}
-                  </TooltipContent>
-                </Tooltip>
-              );
-            }
-
-            return wrapped;
-          })}
+        <nav className="px-2 pt-4 pb-2 space-y-0.5">
+          {mainNav.map((item) => (
+            <NavItem
+              key={item.label}
+              {...item}
+              isActive={item.href ? pathname.startsWith(item.href) : false}
+              open={open}
+            />
+          ))}
         </nav>
+
+        {/* ── Separator + secondary nav ── */}
+        <div className="px-2 pt-2 pb-2">
+          <Separator className="mb-3" />
+          <div className="space-y-0.5">
+            {secondaryNav.map((item) => (
+              <NavItem
+                key={item.label}
+                {...item}
+                isActive={false}
+                open={open}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Spacer */}
+        <div className="flex-1" />
 
         <Separator />
 
         {/* ── Bottom nav ── */}
         <div className="px-2 py-3 space-y-0.5">
-          {bottomItems.map(({ label, icon: Icon }) => {
-            const inner = (
+          {bottomNav.map(({ label, icon: Icon }) => {
+            const row = (
               <div
                 className={cn(
-                  "group flex items-center gap-3 px-2 py-2 rounded-md text-sm w-full",
-                  "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                  "cursor-default transition-colors duration-150",
+                  "flex items-center gap-3 px-2 py-2 rounded-md text-sm",
+                  "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                  "cursor-default transition-colors w-full",
                   !open && "justify-center"
                 )}
               >
-                <Icon size={20} strokeWidth={1.75} className="shrink-0" />
-                {open && <span className="font-medium whitespace-nowrap">{label}</span>}
+                <Icon size={20} strokeWidth={1.5} className="shrink-0" />
+                {open && <span className="whitespace-nowrap">{label}</span>}
               </div>
             );
 
-            if (!open) {
-              return (
-                <Tooltip key={label}>
-                  <TooltipTrigger asChild>
-                    <div className="w-full">{inner}</div>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">{label}</TooltipContent>
-                </Tooltip>
-              );
-            }
-
-            return <div key={label} className="w-full">{inner}</div>;
+            return !open ? (
+              <Tooltip key={label}>
+                <TooltipTrigger asChild><div className="w-full">{row}</div></TooltipTrigger>
+                <TooltipContent side="right">{label}</TooltipContent>
+              </Tooltip>
+            ) : (
+              <div key={label} className="w-full">{row}</div>
+            );
           })}
         </div>
 
@@ -201,7 +245,7 @@ export default function Sidebar() {
         {/* ── User profile ── */}
         <div
           className={cn(
-            "flex items-center gap-3 px-3 py-4 overflow-hidden",
+            "flex items-center gap-3 px-3 py-4",
             !open && "justify-center"
           )}
         >
@@ -209,7 +253,7 @@ export default function Sidebar() {
             <TooltipTrigger asChild>
               <Avatar className="w-8 h-8 shrink-0 cursor-pointer">
                 <AvatarImage src="" />
-                <AvatarFallback className="text-xs font-semibold bg-primary text-primary-foreground">
+                <AvatarFallback className="text-xs font-semibold bg-muted text-foreground">
                   JA
                 </AvatarFallback>
               </Avatar>
