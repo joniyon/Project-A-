@@ -66,18 +66,19 @@ export default function CampaignTable() {
               className={cn(
                 "relative px-4 py-3.5 text-sm transition-colors whitespace-nowrap select-none",
                 activeTab === tab.key
-                  ? "text-foreground font-semibold"
-                  : "text-muted-foreground font-medium hover:text-foreground"
+                  ? "text-foreground font-medium"
+                  : "text-muted-foreground font-normal hover:text-foreground"
               )}
             >
               {tab.label}
               <span className={cn(
-                "ml-1.5 text-xs",
-                activeTab === tab.key ? "text-muted-foreground" : "text-muted-foreground/50"
+                "ml-1 text-xs",
+                activeTab === tab.key
+                  ? "text-muted-foreground"
+                  : "text-muted-foreground/40"
               )}>
                 [{counts[tab.key]}]
               </span>
-              {/* Active underline */}
               {activeTab === tab.key && (
                 <span className="tab-indicator absolute bottom-0 left-4 right-4 h-[2px] bg-foreground rounded-full" />
               )}
@@ -85,11 +86,11 @@ export default function CampaignTable() {
           ))}
         </div>
 
-        {/* Date picker */}
+        {/* Date filter */}
         <div className="pr-4">
-          <button className="flex items-center gap-1.5 text-xs text-foreground border border-input rounded-md px-3 py-1.5 hover:bg-accent transition-colors font-medium">
+          <button className="flex items-center gap-1.5 text-xs text-foreground border border-input rounded-md px-3 py-1.5 hover:bg-muted transition-colors font-normal">
             This week
-            <ChevronDown size={14} strokeWidth={1.75} />
+            <ChevronDown size={13} strokeWidth={1.5} />
           </button>
         </div>
       </div>
@@ -97,22 +98,23 @@ export default function CampaignTable() {
       {/* ── Table ── */}
       <div className="overflow-x-auto">
         <table className="w-full">
-          {/* Header */}
+
+          {/* Header — no background tint, plain white */}
           <thead>
-            <tr className="border-b border-border bg-muted/40">
-              <th className="text-left pl-5 pr-3 py-3 text-xs font-medium text-muted-foreground w-12">
+            <tr className="border-b border-border">
+              <th className="text-left pl-5 pr-3 py-3.5 text-xs font-medium text-muted-foreground w-12">
                 #
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">
+              <th className="text-left px-4 py-3.5 text-xs font-medium text-muted-foreground">
                 Title
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground">
+              <th className="text-left px-4 py-3.5 text-xs font-medium text-muted-foreground">
                 Labels
               </th>
-              <th className="text-right px-4 py-3 text-xs font-medium text-muted-foreground w-28">
+              <th className="text-right px-4 py-3.5 text-xs font-medium text-muted-foreground w-32">
                 Reward [$]
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-36">
+              <th className="text-left px-4 py-3.5 text-xs font-medium text-muted-foreground w-36">
                 Status
               </th>
               <th className="w-12" />
@@ -133,21 +135,21 @@ export default function CampaignTable() {
                   )}
                 >
                   {/* # */}
-                  <td className="pl-5 pr-3 py-4 text-xs font-medium text-muted-foreground">
+                  <td className="pl-5 pr-3 py-4 text-xs text-muted-foreground tabular-nums">
                     {rowNumber}
                   </td>
 
                   {/* Title */}
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
-                      {/* Gradient thumbnail */}
                       <div
                         className={cn(
-                          "w-8 h-8 rounded-md shrink-0 bg-gradient-to-br",
+                          "w-9 h-9 rounded-md shrink-0 bg-gradient-to-br",
                           campaign.gradient
                         )}
                       />
-                      <span className="text-sm font-medium text-foreground line-clamp-1 leading-snug">
+                      {/* font-normal to match screenshot */}
+                      <span className="text-sm font-normal text-foreground line-clamp-1 leading-snug">
                         {campaign.title}
                       </span>
                     </div>
@@ -162,8 +164,8 @@ export default function CampaignTable() {
                     </div>
                   </td>
 
-                  {/* Reward */}
-                  <td className="px-4 py-4 text-right text-sm font-semibold text-foreground tabular-nums">
+                  {/* Reward — regular weight, not semibold */}
+                  <td className="px-4 py-4 text-right text-sm font-normal text-foreground tabular-nums">
                     ${campaign.reward}
                   </td>
 
@@ -172,10 +174,10 @@ export default function CampaignTable() {
                     <StatusBadge status={campaign.status} />
                   </td>
 
-                  {/* Actions */}
+                  {/* Actions — always visible, not hidden */}
                   <td className="px-3 py-4">
-                    <button className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-accent hover:text-foreground transition-all">
-                      <MoreHorizontal size={16} strokeWidth={1.75} />
+                    <button className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+                      <MoreHorizontal size={16} strokeWidth={1.5} />
                     </button>
                   </td>
                 </tr>
