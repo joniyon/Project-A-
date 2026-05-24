@@ -32,7 +32,7 @@ export default function StatusBadge({ status }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-normal",
+        "inline-flex items-center gap-2 px-3 py-1 rounded-[6px] text-xs font-normal",
         pill,
         text
       )}

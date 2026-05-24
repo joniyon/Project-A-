@@ -36,6 +36,41 @@ function getCounts(data: Campaign[]) {
   };
 }
 
+type GradientDirection =
+  | "to right" | "to left"
+  | "to bottom" | "to top"
+  | "to bottom right" | "to bottom left"
+  | "to top right" | "to top left";
+
+interface GradientConfig {
+  gradient: string;   // CSS background value
+  colors: string[];   // individual hex stops
+  direction: GradientDirection;
+}
+
+function randomHex(): string {
+  return "#" + Math.floor(Math.random() * 0xffffff)
+    .toString(16)
+    .padStart(6, "0");
+}
+
+function randomDirection(): GradientDirection {
+  const dirs: GradientDirection[] = [
+    "to right", "to left",
+    "to bottom", "to top",
+    "to bottom right", "to bottom left",
+    "to top right", "to top left",
+  ];
+  return dirs[Math.floor(Math.random() * dirs.length)];
+}
+
+function generateGradient(stops = 2): GradientConfig {
+  const colors = Array.from({ length: stops }, randomHex);
+  const direction = randomDirection();
+  const gradient = `linear-gradient(${direction}, ${colors.join(", ")})`;
+  return { gradient, colors, direction };
+}
+
 /* ------------------------------------------------------------------ */
 
 export default function CampaignTable() {
@@ -147,7 +182,7 @@ export default function CampaignTable() {
             {paginated.map((campaign, index) => {
               const rowNumber = (currentPage - 1) * rowsPerPage + index + 1;
               return (
-                <tr key={campaign.id} className="campaign-row">
+                <tr key={campaign.id} className={cn("campaign-row", index%2 === 0 ? "bg-[#fafafa]" : "bg-white")}>
                   {/* # */}
                   <td className="pl-4 pr-4 py-4 text-xs text-muted-foreground tabular-nums">
                     {rowNumber}
@@ -157,8 +192,9 @@ export default function CampaignTable() {
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-4">
                       <div
+                        style={{ background: generateGradient().gradient }}
                         className={cn(
-                          "w-8 h-8 rounded-md shrink-0 bg-gradient-to-br",
+                          "size-8 rounded-md shrink-0 bg-gradient-to-br",
                           campaign.gradient
                         )}
                       />
