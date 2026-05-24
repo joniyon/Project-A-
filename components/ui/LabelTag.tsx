@@ -6,7 +6,7 @@ interface LabelTagProps {
 
 export default function LabelTag({ label }: LabelTagProps) {
   return (
-    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full border border-border bg-transparent text-xs text-foreground font-normal whitespace-nowrap">
+    <span className="inline-flex items-center px-2.5 py-0.5 rounded-[5px] border border-border bg-transparent text-xs text-foreground font-normal whitespace-nowrap">
       {label}
     </span>
   );
