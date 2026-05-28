@@ -39,7 +39,7 @@ export default function AnalyticsPage() {
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
         {/* ── Top Bar ── */}
-        <header className="h-[60px] shrink-0 bg-white border-b flex items-center justify-between gap-4 px-8"
+        <header className="h-[64px] shrink-0 bg-white border-b flex items-center justify-between gap-4 px-8"
           style={{ borderColor: "#E2E4E9" }}>
           {/* Search */}
           <div className="relative w-64">
