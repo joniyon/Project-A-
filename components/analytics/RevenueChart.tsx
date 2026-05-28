@@ -5,7 +5,7 @@ import {
   Tooltip, ResponsiveContainer,
 } from "recharts";
 import { revenueData } from "@/data/analytics";
-import { RefreshCw } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 function formatY(value: number) {
   if (value >= 1000) return `${value / 1000}k`;
@@ -20,8 +20,8 @@ export default function RevenueChart() {
       </p>
 
       <div className="flex gap-8">
-        {/* Left — summary */}
-        <div className="w-[220px] shrink-0 flex flex-col justify-between">
+        {/* Left — fixed to stat card width */}
+        <div className="w-[200px] shrink-0 flex flex-col justify-between">
           <div>
             <p className="text-[28px] font-semibold text-foreground tracking-tight leading-none mb-1">
               $1,098,872
@@ -29,7 +29,7 @@ export default function RevenueChart() {
             <p className="text-xs text-muted-foreground mb-4">Total 12 months Revenue</p>
             <div className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground mb-4"
               style={{ border: "1px solid #E2E4E9" }}>
-              <RefreshCw size={14} strokeWidth={1.5} />
+              <Sparkles size={14} strokeWidth={1.5} />
             </div>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
