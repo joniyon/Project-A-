@@ -21,7 +21,8 @@ export default function RevenueChart() {
 
       <div className="flex gap-8">
         {/* Left — fixed to stat card width */}
-        <div className="w-[363px] shrink-0 flex flex-col justify-between">
+        <div className="w-[250
+        px] shrink-0 flex flex-col justify-between">
           <div>
             <p className="text-[28px] font-semibold text-foreground tracking-tight leading-none mb-1">
               $1,098,872
