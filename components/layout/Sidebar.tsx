@@ -131,7 +131,7 @@ export default function Sidebar() {
         )}
       >
         {/* ── Logo / toggle row ── */}
-        <div className="flex items-center h-[60px] shrink-0 border-b border-border px-3">
+        <div className="flex items-center h-[64px] shrink-0 border-b border-border px-3">
           {open ? (
             <>
               <span

@@ -21,9 +21,9 @@ const PERIODS = ["This Month", "Last Month", "Last 3 Months", "This Year"];
 
 function getGreeting() {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good Morning";
-  if (hour < 17) return "Good Afternoon";
-  return "Good Evening";
+  if (hour < 12) return "Analytics";
+  if (hour < 17) return "Analytics";
+  return "Analytics";
 }
 
 export default function AnalyticsPage() {
