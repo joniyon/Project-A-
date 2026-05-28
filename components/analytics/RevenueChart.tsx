@@ -26,18 +26,21 @@ export default function RevenueChart() {
             <p className="text-[28px] font-semibold text-foreground tracking-tight leading-none mb-1">
               $1,098,872
             </p>
-            <p className="text-xs text-muted-foreground mb-4">Total 12 months Revenue</p>
-            <div className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground mb-4"
+            <p className="text-xs text-muted-foreground">Total 12 months Revenue</p>
+          </div>
+
+          <div>
+            <div className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground mb-2"
               style={{ border: "1px solid #E2E4E9" }}>
               <Sparkles size={14} strokeWidth={1.5} />
             </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              The strong growth between November and December{" "}
+              <span className="text-emerald-600 font-medium">[+8.3%]</span>{" "}
+              is a good indicator. AI recommends scaling online campaigns mostly
+              this period for Kiddies fashion.
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            The strong growth between November and December{" "}
-            <span className="text-emerald-600 font-medium">[+8.3%]</span>{" "}
-            is a good indicator. AI recommends scaling online campaigns mostly
-            this period for Kiddies fashion.
-          </p>
         </div>
 
         {/* Right — chart */}
