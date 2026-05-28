@@ -34,7 +34,7 @@ const mainNav = [
   { href: null,         label: "Dashboard", icon: LayoutDashboard, clickable: false },
   { href: "/campaigns", label: "Campaigns", icon: Megaphone,       clickable: true  },
   { href: "/analytics", label: "Analytics", icon: BarChart2,       clickable: true  },
-  { href: null,         label: "Boosts",    icon: Zap,             clickable: false },
+  { href: "/boosts",    label: "Boosts",    icon: Zap,             clickable: true  },
   { href: "/database",  label: "Database",  icon: Database,        clickable: true  },
 ];
 
