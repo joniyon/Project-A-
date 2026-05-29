@@ -47,7 +47,7 @@ export default function BoostsPage() {
 
         {/* ── Top Bar ── */}
         <header
-          className="h-[60px] shrink-0 bg-white flex items-center justify-between gap-4 px-8"
+          className="h-[64px] shrink-0 bg-white flex items-center justify-between gap-4 px-8"
           style={{ borderBottom: "1px solid #E2E4E9" }}
         >
           <h1 className="text-xl font-semibold text-foreground tracking-tight">Boosts</h1>
